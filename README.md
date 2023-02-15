@@ -30,7 +30,7 @@ Instead, this plugin accepts parameters structured as a JSON:
 ## Installation
 
 ```
-gem "jekyll-shields_io", "<~ 0.0", git: "https://github.com/clpsplug/jekyll-shields_io"
+gem "jekyll-shields_io", git: "https://github.com/clpsplug/jekyll-shields_io", branch: "base"
 ```
 
 RubyGems TBA
