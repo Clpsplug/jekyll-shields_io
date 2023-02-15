@@ -1,8 +1,8 @@
-require 'digest'
-require 'fileutils'
-require 'json'
-require 'nokogiri'
-require 'httparty'
+require "digest"
+require "fileutils"
+require "json"
+require "nokogiri"
+require "httparty"
 
 # Factory for generating Shields.IO's shield
 class ShieldFactory
@@ -33,7 +33,7 @@ class ShieldFactory
     if File.exist? cache_path
       log "Cache hit for query: #{query} => #{cache_path}"
       # Good news: Shields.IO outputs SVG, which is just XML, and it makes our job very easy!
-      image_xml = Nokogiri::XML(File.read cache_path)
+      image_xml = Nokogiri::XML(File.read(cache_path))
     else
       log "Cache missed for query: #{query}"
       # If the cache does not exist, we need to get the file.
@@ -67,9 +67,12 @@ class ShieldFactory
       return
     end
     # Polyglot compatibility
-    unless @site.respond_to?(:active_lang) && (@site.active_lang == @site.default_lang)
-      log "Skipping copy because of non-default lang site (active lang = #{@site.active_lang})"
-      return
+    if @site.respond_to?(:active_lang)
+      log "Detected Polyglot"
+      unless @site.active_lang == @site.default_lang
+        log "Skipping copy because of non-default lang site is being built (active lang = #{@site.active_lang})"
+        return
+      end
     end
     @site.static_files << StaticShieldFile.new(@site, @site.source, File.join("_cache", "shields_io"), shield.basename, target_dir(true))
     log "Cached shield queued for copying"
@@ -85,7 +88,7 @@ class ShieldFactory
   private
 
   def cache_dir
-    @source_dir.nil? || @source_dir.empty? ?
+    (@source_dir.nil? || @source_dir.empty?) ?
       File.join(Dir.pwd, "_cache", "shields_io") :
       File.join(Dir.pwd, @source_dir, "_cache", "shields_io")
   end
@@ -96,17 +99,17 @@ class ShieldFactory
     ignored_symbols.each { |s| c.delete(s) }
     c.to_a.map { |k, v|
       "#{k}=#{v}"
-    }.join '&'
+    }.join "&"
   end
 
   def log(mes)
     unless @site.config["verbose"] != true
-      STDERR.puts mes
+      $stderr.warn mes
     end
   end
 end
 
-# Object to represent the Shields.IO shield
+# Object to represent the Shields.IO shield (plus some extra stuff)
 # @!attribute [r] width
 #   @return [Integer] use for img tag
 # @!attribute [r] height
@@ -170,11 +173,11 @@ module Jekyll
     def initialize(tag_name, input, parse_context)
       super
       # @type [Hash]
-      @payload = JSON.parse(input.strip, { symbolize_names: true })
+      @payload = JSON.parse(input.strip, {symbolize_names: true})
     end
 
-    def render(_context)
-      fct = ShieldFactory.new _context
+    def render(context)
+      fct = ShieldFactory.new context
       shield = fct.get_shield @payload
       if shield.nil?
         raise ShieldError.new
@@ -184,17 +187,17 @@ module Jekyll
       shield_tag = <<HTML
       <img src="/#{fct.target_dir}/#{shield.basename}" width="#{shield.width}" height="#{shield.height}"
 HTML
-      if shield.alt != nil
-        shield_tag += " alt=\"#{shield.alt}\" class=\"#{shield.cls}\"/>"
+      shield_tag += if !shield.alt.nil?
+        " alt=\"#{shield.alt}\" class=\"#{shield.cls}\"/>"
       else
-        shield_tag += " class=\"#{shield.cls}\"/>"
+        " class=\"#{shield.cls}\"/>"
       end
-      if shield.href != nil
-        <<HTML
-<a href="#{shield.href}" class="#{shield.cls}">
-#{shield_tag}
-</a>
-HTML
+      if !shield.href.nil?
+        <<~HTML
+          <a href="#{shield.href}" class="#{shield.cls}">
+          #{shield_tag}
+          </a>
+        HTML
       else
         shield_tag
       end
@@ -202,4 +205,4 @@ HTML
   end
 end
 
-Liquid::Template.register_tag('shields_io', Jekyll::ShieldsIOTag)
+Liquid::Template.register_tag("shields_io", Jekyll::ShieldsIOTag)
