@@ -1,10 +1,10 @@
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-require "jekyll-shields-io/version"
+require "jekyll-shields_io/version"
 
 Gem::Specification.new do |s|
-  s.name = "jekyll-shield-io"
+  s.name = "jekyll-shield_io"
   s.version = Jekyll::ShieldsIO::VERSION
   s.summary = "Adds ability to put shields.io badges in your Jekyll blog"
   s.description = <<~EOD
