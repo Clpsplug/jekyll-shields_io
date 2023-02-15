@@ -102,6 +102,16 @@ this plugin has an extended parameter `alt` for that purpose.
 | logo    | Service name or Simple Icons icon name; display on the left of the leftside text.                                                                                                                                                           | NO                           |
 | href    | A URL. Specifying this key will turn the shield into a clickable link                                                                                                                                                                       | NO                           |
 
+## NOTE: i18n plugin compatibility
+
+This plugin tries to detect i18n plugin [Polyglot](https://github.com/untra/polyglot) when deploying shields to the assets folder;
+this is done so that we don't accidentally deploy the shields for each language version of your site
+(because usually you would have one `asset` folder that all the language versions would access.)  
+
+If you use other i18n plugins, the plugin may fail to spot that such i18n plugin is generating non-main language version of the site
+and incorrectly deploy cached shields to those versions.  
+If you happen to see this behavior, please report it or send me a PR so that we can make this plugin compatible with that one!
+
 ## Contributing
 
 Bug reports & pull requests are welcome on [GitHub repo](https://github.com/clpsplug/jekyll-shields_io).
