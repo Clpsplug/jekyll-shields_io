@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    jekyll-shield_io (0.0.1)
+    jekyll-shields_io (0.1.0)
       httparty (~> 0.17, < 1.0)
       jekyll (>= 3.5, < 5.0)
       nokogiri (~> 1.4, < 2.0)
@@ -108,7 +108,7 @@ PLATFORMS
   x86_64-darwin-21
 
 DEPENDENCIES
-  jekyll-shield_io!
+  jekyll-shields_io!
   standard
 
 BUNDLED WITH
