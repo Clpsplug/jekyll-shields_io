@@ -2,14 +2,16 @@ PATH
   remote: .
   specs:
     jekyll-shield-io (0.0.1)
-      httparty (>= 0.17, < 1.0)
+      httparty (~> 0.17, < 1.0)
       jekyll (>= 3.5, < 5.0)
-      nokogiri (>= 1.4, < 2.0)
+      nokogiri (~> 1.4, < 2.0)
 
 GEM
+  remote: https://rubygems.org/
   specs:
     addressable (2.8.1)
       public_suffix (>= 2.0.2, < 6.0)
+    ast (2.4.2)
     colorator (1.1.0)
     concurrent-ruby (1.2.0)
     em-websocket (0.5.3)
@@ -45,6 +47,7 @@ GEM
       sass-embedded (~> 1.54)
     jekyll-watch (2.2.1)
       listen (~> 3.0)
+    json (2.6.3)
     kramdown (2.4.0)
       rexml
     kramdown-parser-gfm (1.1.0)
@@ -60,15 +63,33 @@ GEM
     multi_xml (0.6.0)
     nokogiri (1.14.0-x86_64-darwin)
       racc (~> 1.4)
+    parallel (1.22.1)
+    parser (3.2.1.0)
+      ast (~> 2.4.1)
     pathutil (0.16.2)
       forwardable-extended (~> 2.6)
     public_suffix (5.0.1)
     racc (1.6.2)
+    rainbow (3.1.1)
     rb-fsevent (0.11.2)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
+    regexp_parser (2.7.0)
     rexml (3.2.5)
     rouge (4.0.1)
+    rubocop (1.45.1)
+      json (~> 2.3)
+      parallel (~> 1.10)
+      parser (>= 3.2.0.0)
+      rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 1.8, < 3.0)
+      rexml (>= 3.2.5, < 4.0)
+      rubocop-ast (>= 1.24.1, < 2.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 2.4.0, < 3.0)
+    rubocop-ast (1.26.0)
+      parser (>= 3.2.1.0)
+    ruby-progressbar (1.11.0)
     safe_yaml (1.0.5)
     sass-embedded (1.57.1-x86_64-darwin)
       google-protobuf (~> 3.21)
@@ -82,6 +103,7 @@ PLATFORMS
 
 DEPENDENCIES
   jekyll-shield-io!
+  rubocop (~> 1.45)
 
 BUNDLED WITH
    2.2.2

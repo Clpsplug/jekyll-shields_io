@@ -20,6 +20,7 @@ EOD
   end
   s.require_paths = ["lib"]
   s.add_dependency "jekyll", ">= 3.5", "< 5.0"
-  s.add_dependency "nokogiri", ">=1.4", "< 2.0"
-  s.add_dependency "httparty", ">=0.17", "< 1.0"
+  s.add_dependency "nokogiri", "~> 1.4", "< 2.0"
+  s.add_dependency "httparty", "~> 0.17", "< 1.0"
+  s.add_development_dependency "rubocop", "~> 1.45"
 end
