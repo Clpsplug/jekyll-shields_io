@@ -2,9 +2,10 @@
 insert_final_newline = true
 indent_size = 4
 indent_style = space
+trim_trailing_whitespace = true
 
 [{*.rb, *.gemspec, Gemfile*}]
 indent_size = 2
 
-[*.yml]
-indent_size = 2
+[*.md]
+trim_trailing_whitespace = false
