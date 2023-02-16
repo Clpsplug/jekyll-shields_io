@@ -112,22 +112,29 @@ module Jekyll
     end
 
     # Object to represent the Shields.IO shield (plus some extra stuff)
-    # @!attribute [r] width
-    #   @return [Integer] use for img tag
-    # @!attribute [r] height
-    #   @return [Integer] use for img tag
-    # @!attribute [r] href
-    #   @return [String]
-    # @!attribute [r] alt
-    #   @return [String]
-    # @!attribute [r] cls
-    #   @return [String]
-    # @!attribute [r] path
-    #   @return [String] Path to the cached shield image
-    # @!attribute [r] basename
-    #   @return [String] Basename part of :path, use for img tag.
     class Shield
-      attr_reader :width, :height, :href, :alt, :cls, :path, :basename
+      # To be used for img tag.
+      # @return [Integer]
+      attr_reader :width
+      # To be used for img tag.
+      # @return [Integer]
+      attr_reader :height
+      # If not nil, make the shield image a link.
+      # @return [String]
+      attr_reader :href
+      # Alternative string for this shield, should the browser fails to load the image
+      # @return [String]
+      attr_reader :alt
+      # HTML class for this shield image.
+      # @return [String]
+      attr_reader :cls
+      # Path to the cache file. *Not* to be used for HTML - use :basename instead.
+      # @return [String]
+      attr_reader :path
+      # Basename of the shield.
+      # Specifying "assets/img/shields/" + :basename to src attribute should display this shield.
+      # @return [String]
+      attr_reader :basename
 
       def initialize(width, height, path, href, alt, cls)
         @width = width
