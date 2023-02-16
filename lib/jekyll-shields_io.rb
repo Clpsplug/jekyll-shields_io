@@ -13,7 +13,7 @@ module Jekyll
         # @type [Jekyll::Site]
         @site = context.registers[:site]
         # @type [String]
-        @source_dir = File.absolute_path context.registers[:site].config['source'], Dir.pwd
+        @source_dir = File.absolute_path context.registers[:site].config["source"], Dir.pwd
       end
 
       # @param [Hash] config
