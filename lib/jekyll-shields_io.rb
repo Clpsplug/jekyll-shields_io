@@ -106,7 +106,7 @@ module Jekyll
 
       def log(mes)
         unless @site.config["verbose"] != true
-          $stderr.warn mes
+          warn mes
         end
       end
     end
