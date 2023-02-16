@@ -13,6 +13,7 @@ Gem::Specification.new do |s|
   EOD
   s.authors = ["C. Plug"]
   s.email = "hsp.tosh.5200113@gmail.com"
+  s.homepage = "https://github.com/clpsplug/jekyll-shields_io"
   s.license = "MIT"
 
   s.files = Dir.chdir(File.expand_path("..", __FILE__)) do

@@ -14,6 +14,7 @@ GEM
     ast (2.4.2)
     colorator (1.1.0)
     concurrent-ruby (1.2.0)
+    diff-lcs (1.5.0)
     em-websocket (0.5.3)
       eventmachine (>= 0.12.9)
       http_parser.rb (~> 0)
@@ -70,12 +71,26 @@ GEM
     public_suffix (5.0.1)
     racc (1.6.2)
     rainbow (3.1.1)
+    rake (13.0.1)
     rb-fsevent (0.11.2)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     regexp_parser (2.7.0)
     rexml (3.2.5)
     rouge (4.1.0)
+    rspec (3.12.0)
+      rspec-core (~> 3.12.0)
+      rspec-expectations (~> 3.12.0)
+      rspec-mocks (~> 3.12.0)
+    rspec-core (3.12.0)
+      rspec-support (~> 3.12.0)
+    rspec-expectations (3.12.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.12.0)
+    rspec-mocks (3.12.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.12.0)
+    rspec-support (3.12.0)
     rubocop (1.44.1)
       json (~> 2.3)
       parallel (~> 1.10)
@@ -109,6 +124,8 @@ PLATFORMS
 
 DEPENDENCIES
   jekyll-shields_io!
+  rake
+  rspec
   standard
 
 BUNDLED WITH
