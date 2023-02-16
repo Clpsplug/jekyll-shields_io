@@ -13,7 +13,7 @@ module Jekyll
         # @type [Jekyll::Site]
         @site = context.registers[:site]
         # @type [String]
-        @source_dir = context.registers[:site].config["source"]
+        @source_dir = File.absolute_path context.registers[:site].config['source'], Dir.pwd
       end
 
       # @param [Hash] config
@@ -25,7 +25,7 @@ module Jekyll
 
         unless File.exist? cache_dir
           FileUtils.mkdir_p cache_dir
-          log "Cache directory was made for Shields.IO tags."
+          log "Cache directory #{cache_dir} was made for Shields.IO tags."
         end
 
         cache_file = "#{Digest::MD5.hexdigest query}.svg"
@@ -90,9 +90,7 @@ module Jekyll
       private
 
       def cache_dir
-        (@source_dir.nil? || @source_dir.empty?) ?
-          File.join(Dir.pwd, "_cache", "shields_io") :
-          File.join(Dir.pwd, @source_dir, "_cache", "shields_io")
+        File.join(@source_dir, "_cache", "shields_io")
       end
 
       def hash_to_query(config, ignored_symbols)

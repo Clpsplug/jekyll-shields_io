@@ -1,6 +1,7 @@
 require "jekyll"
 require "jekyll-shields_io"
 require "httparty"
+require "spec_helper"
 
 RSpec.describe "Liquid::Template" do
   it "has 'shields_io' tag" do
