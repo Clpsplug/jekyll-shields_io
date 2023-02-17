@@ -78,6 +78,7 @@ RSpec.describe "Jekyll::ShieldsIO::ShieldFactory" do
 
     private
 
+    # @param [Jekyll::ShieldsIO::Shield] result
     def match_with_sample_properties(result)
       expect(result).not_to be_nil
       expect(result.width).to eq 174

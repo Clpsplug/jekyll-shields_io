@@ -12,11 +12,15 @@ module Jekyll
       def initialize(context)
         # @type [Jekyll::Site]
         @site = context.registers[:site]
+        # This Jekyll site's "source" config
         # @type [String]
         @source_dir = File.absolute_path context.registers[:site].config["source"], Dir.pwd
       end
 
-      # @param [Hash] config
+      # Fetches the shields from the service or retrieves one from cache
+      # @param [Hash] config User-supplied configuration (parsed from JSON)
+      # @return [Shield]
+      # @raise [ShieldFetchError] If Shields.IO service returns non-200 codes
       def get_shield(config)
         href = config[:href]
         alt = config[:alt]
@@ -40,9 +44,8 @@ module Jekyll
           log "Cache missed for query: #{query}"
           # If the cache does not exist, we need to get the file.
           response = HTTParty.get "https://img.shields.io/static/v1?#{query}"
-          unless response.code == 200
-            warn "Shields.io refused our request with Response Code #{response.code}."
-            return nil
+          unless response.code.div(100) == 2
+            raise ShieldFetchError.new "Shields.io refused our request with response code #{response.code}"
           end
           img = response.body
           File.write cache_path, img
@@ -55,12 +58,11 @@ module Jekyll
       end
 
       # Queue given Shield for this Jekyll site's static files
-      #
-      # shield - Shield to queue for this Jekyll site's Jekyll::StaticFile.
+      # @param [Shield] shield Shield to queue for this Jekyll site's Jekyll::StaticFile.
+      # @raise [ShieldFileError] when specified cache file does not exist
       def queue_shield(shield)
         unless File.exist? shield.path
-          warn "Cached shield image file was not found, maybe we failed to fetch it?"
-          return
+          raise ShieldFileError.new
         end
         if @site.static_files.select { |f|
           f.is_a? StaticShieldFile
@@ -102,9 +104,13 @@ module Jekyll
         }.join "&"
       end
 
-      def log(mes)
-        unless @site.config["verbose"] != true
-          warn mes
+      # Same as warn but will print an identifying tag ([Shields.IO Plugin]) and
+      # will not print unless verbose mode is on, or the message is marked important
+      # @param [String] mes
+      # @param [TrueClass, FalseClass] important
+      def log(mes, important = false)
+        unless @site.config["verbose"] != true || important
+          warn "[Shields.IO Plugin] #{mes}"
         end
       end
     end
@@ -166,10 +172,14 @@ module Jekyll
       end
     end
 
-    class ShieldError < StandardError
-      def initialize(msg = "Failed to fetch the shield.")
-        super
-      end
+    # Thrown when the plugin fails to fetch the shield image.
+    class ShieldFetchError < StandardError
+    end
+
+    # Thrown when the plugin fails to access the cached shield file.
+    # Realistically, if this happens something must be very wrong with the disk the cache is written to
+    # because the plugin would've crashed with IO errors well before this is thrown.
+    class ShieldFileError < StandardError
     end
 
     # Jekyll Liquid Tag for Shields.io
@@ -180,14 +190,14 @@ module Jekyll
         super
         # @type [Hash]
         @payload = JSON.parse(input.strip, {symbolize_names: true})
+        # This only appears if there is an error trying to fetch the shield.
+        # @type [String]
+        @last_ditch_alt = "<p>#{@payload[:label]} #{@payload[:message]}</p>"
       end
 
       def render(context)
         fct = ShieldFactory.new context
         shield = fct.get_shield @payload
-        if shield.nil?
-          raise ShieldError.new
-        end
         fct.queue_shield shield
 
         shield_tag = <<HTML
@@ -207,6 +217,12 @@ HTML
         else
           shield_tag
         end
+      rescue ShieldFetchError
+        warn "[Shields.IO Plugin] Failed to fetch shields! (input: #{JSON.dump @payload})"
+        @last_ditch_alt
+      rescue ShieldFileError
+        warn "[Shields.IO Plugin] Failed to access cached shields!"
+        @last_ditch_alt
       end
     end
   end
