@@ -17,7 +17,7 @@ This plugin exists because this URL was too long for me to debug.
 Instead, this plugin accepts parameters structured as a JSON:
 
 ```liquid
-<!-- If used in Liquid / HTML file, this will do -->
+<!-- When using in Markdown, you need to use `{%- tag -%}` syntax - see "Usage" section -->
 {% shields_io {
   "label": "Find me on",
   "message": "GitHub",
@@ -26,7 +26,52 @@ Instead, this plugin accepts parameters structured as a JSON:
   "logo": "github",
 }
 %}
-<!-- When using in Markdown, you need to use `{%- tag -%}` syntax otherwise the tag will be escaped -->
+```
+
+## Installation
+
+1. Introduce this gem in your Gemfile
+    ```ruby
+    group :jekyll_plugins do
+      # Latest release
+      gem "jekyll-shields_io"
+      # "HEAD" version
+      gem "jekyll-shields_io", git: "https://github.com/clpsplug/jekyll-shields_io", branch: "base"
+    end
+    ```
+2. `bundle install`
+3. Add the plugin to your `_config.yml`
+    ```yaml
+    plugins:
+      - jekyll-shields_io
+    ```
+
+## Usage
+
+The tag name is `shields_io`.
+The JSON payload for your shield follows the tag name.
+You can put newlines in your JSON for readability.
+
+Depending on where you use the tag, you need to use one of the following tag syntaxes:
+
+### Using the tag in Liquid template / HTML
+(i.e., the file name is either `*.html` or `*.liquid`)
+```liquid
+{% shields_io {
+  "label": "Find me on",
+  "message": "GitHub",
+  "color": "181717",
+  "style": "flat",
+  "logo": "github",
+}
+%}
+```
+
+### Using the tag in Markdown
+(i.e., the file name is `*.md`)  
+For markdown files, this syntax is required because the other one causes the shields `<img>` tags to be escaped.
+```liquid
+<!-- Note the "hyphen" (-) after the percentage sign (%) -->
 {%- shields_io {
   "label": "Find me on",
   "message": "GitHub",
@@ -37,13 +82,17 @@ Instead, this plugin accepts parameters structured as a JSON:
 -%}
 ```
 
-## Installation
+## Supported parameters
 
-```
-gem "jekyll-shields_io", git: "https://github.com/clpsplug/jekyll-shields_io", branch: "base"
-```
-
-RubyGems TBA
+| key     | content                                                                                                                                                                                                                                     | required?                    |
+|:--------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-----------------------------|
+| message | The right-side text of the shield.                                                                                                                                                                                                          | YES                          |
+| alt     | The alternative text for the image. This _should_ be specified for accessibility reasons and when the service fails for any reason.                                                                                                         | NO, but strongly recommended |
+| label   | The left-side text of the shield. If left, it will be "static"                                                                                                                                                                              | NO                           |
+| color   | The color of the right side (some styles may ignore this value.) This can be color name (see [Shields.io](https://shields.io/) for supported names) or hex color code. Hex color codes _must not_ contain `#`. If left, 'inactive' is used. | NO                           |
+| style   | The shield style, see [Shields.io](https://shields.io) for valid values. If left, 'plastic' is used.                                                                                                                                        | NO                           |
+| logo    | Service name or Simple Icons icon name; display on the left of the leftside text.                                                                                                                                                           | NO                           |
+| href    | A URL. Specifying this key will turn the shield into a clickable link                                                                                                                                                                       | NO                           |
 
 ## Features
 
@@ -99,18 +148,6 @@ this plugin has an extended parameter `alt` for that purpose.
 }
 %}
 ```
-
-## Supported parameters
-
-| key     | content                                                                                                                                                                                                                                     | required?                    |
-|:--------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-----------------------------|
-| message | The right-side text of the shield.                                                                                                                                                                                                          | YES                          |
-| alt     | The alternative text for the image. This _should_ be specified for accessibility reasons and when the service fails for any reason.                                                                                                         | NO, but strongly recommended |
-| label   | The left-side text of the shield. If left, it will be "static"                                                                                                                                                                              | NO                           |
-| color   | The color of the right side (some styles may ignore this value.) This can be color name (see [Shields.io](https://shields.io/) for supported names) or hex color code. Hex color codes _must not_ contain `#`. If left, 'inactive' is used. | NO                           |
-| style   | The shield style, see [Shields.io](https://shields.io) for valid values. If left, 'plastic' is used.                                                                                                                                        | NO                           |
-| logo    | Service name or Simple Icons icon name; display on the left of the leftside text.                                                                                                                                                           | NO                           |
-| href    | A URL. Specifying this key will turn the shield into a clickable link                                                                                                                                                                       | NO                           |
 
 ## NOTE: i18n plugin compatibility
 
