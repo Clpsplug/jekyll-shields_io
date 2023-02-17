@@ -17,6 +17,7 @@ This plugin exists because this URL was too long for me to debug.
 Instead, this plugin accepts parameters structured as a JSON:
 
 ```liquid
+<!-- If used in Liquid / HTML file, this will do -->
 {% shields_io {
   "label": "Find me on",
   "message": "GitHub",
@@ -25,6 +26,15 @@ Instead, this plugin accepts parameters structured as a JSON:
   "logo": "github",
 }
 %}
+<!-- When using in Markdown, you need to use `{%- tag -%}` syntax otherwise the tag will be escaped -->
+{%- shields_io {
+  "label": "Find me on",
+  "message": "GitHub",
+  "color": "181717",
+  "style": "flat",
+  "logo": "github",
+}
+-%}
 ```
 
 ## Installation
