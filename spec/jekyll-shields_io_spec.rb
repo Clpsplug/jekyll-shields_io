@@ -121,16 +121,18 @@ RSpec.describe "Integration test" do
   context "When invalid JSON is passed" do
     it "fails with exception" do
       t = Liquid::Template.new
-      expect { t.parse(
-        <<~EOT
-          {% shield_io {this is invalid!} %}
-      EOT
-      ) }.to raise_error Jekyll::ShieldsIO::ShieldConfigMalformedError
+      expect {
+        t.parse(
+          <<~EOT
+            {% shield_io {this is invalid!} %}
+        EOT
+        )
+      }.to raise_error Jekyll::ShieldsIO::ShieldConfigMalformedError
     end
   end
 
   after do
-    if File.exists? @cache_dir
+    if File.exist? @cache_dir
       FileUtils.rm_r @cache_dir
     end
   end
