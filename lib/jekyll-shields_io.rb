@@ -116,9 +116,11 @@ module Jekyll
     end
 
     # Jekyll Liquid Tag for Shields.io
-    #
     # Usage: {% shields_io <query param + special param as json> %}
     class ShieldsIOTag < Liquid::Tag
+      # @param [String] tag_name == shields_io
+      # @param [String] input User input
+      # @param [Liquid::Context] parse_context
       def initialize(tag_name, input, parse_context)
         super
         # @type [Hash]
@@ -126,6 +128,9 @@ module Jekyll
         # This only appears if there is an error trying to fetch the shield.
         # @type [String]
         @last_ditch_alt = "<p>#{@payload[:label]} #{@payload[:message]}</p>"
+      rescue JSON::ParserError => pe
+        warn "[Shields.IO Plugin] Shield configuration is malformed (#{pe.message})"
+        raise ShieldConfigMalformedError
       end
 
       def render(context)

@@ -57,6 +57,13 @@ module Jekyll
       end
     end
 
+    # Thrown when the plugin encounters malformed input.
+    class ShieldConfigMalformedError < StandardError
+      def initialize(msg = "Malformed configuration was passed to the plugin")
+        super
+      end
+    end
+
     # Thrown when the plugin fails to fetch the shield image.
     class ShieldFetchError < StandardError
     end
