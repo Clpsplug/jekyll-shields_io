@@ -20,7 +20,9 @@ Gem::Specification.new do |s|
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   end
   s.require_paths = ["lib"]
+  s.required_ruby_version = ">= 2.7", "< 4"
   s.add_dependency "jekyll", ">= 3.5", "< 5.0"
   s.add_dependency "nokogiri", "~> 1.4", "< 2.0"
   s.add_dependency "httparty", "~> 0.17", "< 1.0"
+  s.add_development_dependency "appraisal"
 end

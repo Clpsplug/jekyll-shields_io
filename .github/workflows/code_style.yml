@@ -6,15 +6,19 @@ on:
     pull_request:
         branches: [ base ]
 
+
 jobs:
     code_style:
         runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                ruby-version: ['3.1', '2.7']
         steps:
             -   uses: actions/checkout@v3
-            -   name: Set up Ruby
+            -   name: Set up Ruby ${{ matrix.ruby-version }}
                 uses: ruby/setup-ruby@359bebbc29cbe6c87da6bc9ea3bc930432750108
                 with:
-                    ruby-version: '2.7'
+                    ruby-version: ${{ matrix.ruby-version }}
                     bundler-cache: true
             -   name: Install dependencies
                 run: bundle install
