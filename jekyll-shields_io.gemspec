@@ -23,4 +23,5 @@ Gem::Specification.new do |s|
   s.add_dependency "jekyll", ">= 3.5", "< 5.0"
   s.add_dependency "nokogiri", "~> 1.4", "< 2.0"
   s.add_dependency "httparty", "~> 0.17", "< 1.0"
+  s.add_development_dependency "appraisal"
 end
