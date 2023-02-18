@@ -2,9 +2,9 @@ name: Check functionality
 
 on:
     push:
-        branches: [ main ]
+        branches: [ base ]
     pull_request:
-        branches: [ main ]
+        branches: [ base ]
 
 jobs:
     test:

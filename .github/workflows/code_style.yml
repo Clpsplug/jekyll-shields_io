@@ -2,9 +2,9 @@ name: Check code style
 
 on:
     push:
-        branches: [ main ]
+        branches: [ base ]
     pull_request:
-        branches: [ main ]
+        branches: [ base ]
 
 jobs:
     code_style:
