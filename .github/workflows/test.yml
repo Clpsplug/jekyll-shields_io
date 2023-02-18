@@ -17,7 +17,7 @@ jobs:
                     ruby-version: '2.7'
                     bundler-cache: true
             -   name: Install dependencies
-                run: bundle install
+                run: bundle config set force_ruby_platform true && bundle install
             -   name: Run tests
                 run: bundle exec rake spec
 
