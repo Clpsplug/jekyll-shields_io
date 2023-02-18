@@ -107,9 +107,8 @@ module Jekyll
       # Same as warn but will print an identifying tag ([Shields.IO Plugin]) and
       # will not print unless verbose mode is on, or the message is marked important
       # @param [String] mes
-      # @param [TrueClass, FalseClass] important
-      def log(mes, important = false)
-        unless @site.config["verbose"] != true || important
+      def log(mes)
+        if @site.config["verbose"] == true
           warn "[Shields.IO Plugin] #{mes}"
         end
       end
