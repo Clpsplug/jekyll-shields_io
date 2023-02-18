@@ -1,4 +1,4 @@
-name: Check functionality
+name: Check code style
 
 on:
     push:
@@ -7,7 +7,7 @@ on:
         branches: [ main ]
 
 jobs:
-    test:
+    code_style:
         runs-on: ubuntu-latest
         steps:
             -   uses: actions/checkout@v3
@@ -19,5 +19,4 @@ jobs:
             -   name: Install dependencies
                 run: bundle install
             -   name: Run tests
-                run: bundle exec rake spec
-
+                run: bundle exec rake standard
