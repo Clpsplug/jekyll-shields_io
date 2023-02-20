@@ -3,9 +3,20 @@ name: Check functionality
 on:
     push:
         branches: [ base ]
+        paths-ignore:
+            - "**.md"
+            - "LICENSE.txt"
+            - ".idea/**"
     pull_request:
         branches: [ base ]
+        paths-ignore:
+            - "**.md"
+            - "LICENSE.txt"
+            - ".idea/**"
 
+concurrency:
+    group: ${{ github.head_ref }}-test
+    cancel-in-progress: true
 
 jobs:
     test:
