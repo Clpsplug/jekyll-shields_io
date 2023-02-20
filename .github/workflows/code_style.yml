@@ -3,16 +3,31 @@ name: Check code style
 on:
     push:
         branches: [ base ]
+        paths-ignore:
+            - "**.md"
+            - "LICENSE.txt"
+            - ".idea/**"
+            - ".gitignore"
+            - ".editorconfig"
     pull_request:
         branches: [ base ]
+        paths-ignore:
+            - "**.md"
+            - "LICENSE.txt"
+            - ".idea/**"
+            - ".gitignore"
+            - ".editorconfig"
 
+concurrency:
+    group: ${{ github.head_ref }}-code-style
+    cancel-in-progress: true
 
 jobs:
     code_style:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                ruby-version: ['3.1', '2.7']
+                ruby-version: [ '3.1', '2.7' ]
         steps:
             -   uses: actions/checkout@v3
             -   name: Set up Ruby ${{ matrix.ruby-version }}
