@@ -10,6 +10,12 @@ RSpec.describe "Liquid::Template" do
   end
 end
 
+class ShieldFactoryForTest < Jekyll::ShieldsIO::ShieldFactory
+  # Jekyll's Site object
+  # @return [Jekyll::Site]
+  attr_reader :site
+end
+
 class ShieldsIOTagForTest < Jekyll::ShieldsIO::ShieldsIOTag
   attr_reader :factory
 end
@@ -20,7 +26,7 @@ RSpec.describe "Jekyll::ShieldsIO::ShieldFactory" do
     @context = Liquid::Context.new({}, {}, {
       site: Jekyll::Site.new(Jekyll.configuration({"source" => "", "skip_config_files" => true}))
     })
-    @factory = Jekyll::ShieldsIO::ShieldFactory.new @context
+    @factory = ShieldFactoryForTest.new @context
     File.open("spec/support/test_shield.svg", "r") { |fp|
       @test_shield = fp.read
     }
@@ -49,11 +55,6 @@ RSpec.describe "Jekyll::ShieldsIO::ShieldFactory" do
         result = @factory.get_shield @config
         match_with_sample_properties result
       end
-
-      after do
-        # The factory creates cache dir automatically, so we remove it for future tests
-        FileUtils.rm_r @cache_dir
-      end
     end
 
     context "when the given shield configuration yields known (cached) url" do
@@ -78,10 +79,6 @@ RSpec.describe "Jekyll::ShieldsIO::ShieldFactory" do
         }.not_to raise_error
         match_with_sample_properties result
       end
-
-      after do
-        FileUtils.rm_r @cache_dir
-      end
     end
 
     private
@@ -99,6 +96,57 @@ RSpec.describe "Jekyll::ShieldsIO::ShieldFactory" do
       expect(result.basename).to eq "#{Digest::MD5.hexdigest @query}.svg"
     end
   end
+
+  describe "queue_shield" do
+    before do
+      allow(HTTParty).to receive(:get).and_return(
+        instance_double(HTTParty::Response, body: @test_shield, code: 200)
+      )
+    end
+
+    context "when queueing a shield for deployment" do
+      it "can queue Shield object into Jekyll's static files as StaticShieldFile" do
+        shield = @factory.get_shield @config
+        @factory.queue_shield shield
+        check_queue_property shield
+      end
+    end
+
+    context "when shields of the same property gets queued" do
+      it "queues such shields exactly once" do
+        shield = @factory.get_shield @config
+        # Notice that we're calling these over and over again
+        @factory.queue_shield shield
+        @factory.queue_shield shield
+        @factory.queue_shield shield
+        check_queue_property shield
+      end
+    end
+
+    private
+
+    def check_queue_property(shield)
+      site = @factory.site
+      expect(site.static_files).to have_attributes(size: 1)
+      expect(site.static_files.any? { |f|
+        f.relative_path == File.join("_cache", "shields_io", shield.basename)
+      }).to eq true
+      expect(site.static_files[0].instance_of?(Jekyll::ShieldsIO::StaticShieldFile)).to eq true
+    end
+
+    public
+
+    after do
+      @factory.site.static_files.clear
+    end
+  end
+
+  after do
+    # The factory creates cache dir automatically, so we remove it for future tests
+    if File.exist? @cache_dir
+      FileUtils.rm_r @cache_dir
+    end
+  end
 end
 
 RSpec.describe "Jekyll::ShieldsIO::ShieldsIOTag" do
@@ -112,12 +160,10 @@ RSpec.describe "Jekyll::ShieldsIO::ShieldsIOTag" do
     if @test_shield.nil?
       fail "Test code has failed to read the support file for sample shield file"
     end
+    @tokenizer = Liquid::Tokenizer.new("")
+    @parse_context = Liquid::ParseContext.new
   end
   describe "#render" do
-    before do
-      @tokenizer = Liquid::Tokenizer.new("")
-      @parse_context = Liquid::ParseContext.new
-    end
     context "Normal situations" do
       before do
         allow(HTTParty).to receive(:get).and_return(
@@ -157,9 +203,7 @@ RSpec.describe "Jekyll::ShieldsIO::ShieldsIOTag" do
         end
         it "outputs last-ditch effort alternative text" do
           markup = '{"message": "test"}'
-          tokenizer = Liquid::Tokenizer.new("")
-          parse_context = Liquid::ParseContext.new
-          @tag = ShieldsIOTagForTest.parse(nil, markup, tokenizer, parse_context)
+          @tag = ShieldsIOTagForTest.parse(nil, markup, @tokenizer, @parse_context)
           rendered = @tag.render @context
           expect(rendered).to eq "<p> test</p>"
         end
