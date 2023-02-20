@@ -96,7 +96,7 @@ For markdown files, this syntax is required because the other one causes the shi
 
 ## Features
 
-### Easy to debug shield parameters
+### Debuggable shield parameters
 
 You can specify the parameters passed to Shields.io using JSON,
 which prevents accidental and hard-to-spot mistakes.
@@ -162,6 +162,43 @@ If you happen to see this behavior, please report it or send me a PR so that we 
 ## Contributing
 
 Bug reports & pull requests are welcome on [GitHub repo](https://github.com/clpsplug/jekyll-shields_io).
+
+### Development setup
+
+To set up the plugin development env only:
+```sh
+git clone https://github.com/Clpsplug/jekyll-shields_io.git
+# OR
+git clone git@github.com:Clpsplug/jekyll-shields_io.git
+# OR 
+gh repo clone Clpsplug/jekyll-shields_io
+
+# Get dependencies
+bundle install
+# Run checks that are run on Github Actions
+rake
+# Run test for latest Jekyll available in your environment
+rake spec
+# Check code style using "standard" gem
+rake standard
+
+# To test every supported Jekyll & Ruby combination:
+bundle exec appraisal install
+bundle exec appraisal rake spec
+```
+
+When contributing, please at least run `rake` and check that 
+no issues are raised from "standard" gem and that specs passes!  
+(If you're having trouble passing the specs, don't hesitate note so in the PR.)
+
+To test the plugin with real Jekyll environment, 
+follow the [Installation](#installation) guide except for adding a line to Gemfile.  
+You will need to add this line to your Gemfile instead:
+```ruby
+gem "jekyll-shields_io", path: "<Wherever you have this repository, can be relative path>"
+# for example
+gem "jekyll-shields_io", path: "../jekyll-shields_io"
+```
 
 ## License
 

@@ -54,7 +54,7 @@ RSpec.describe "Jekyll::ShieldsIO::ShieldFactory" do
     context "when the given shield configuration yields known (cached) url" do
       before do
         # In this test, we deliberately mock a crash response;
-        # if the plugin missed the cache and try to pull the shield, nil will be returned.
+        # if the plugin misses the cache and tries to pull the shield, the plugin will crash.
         allow(HTTParty).to receive(:get).and_return(
           instance_double(HTTParty::Response, body: "This should not happen", code: 500)
         )
@@ -67,7 +67,10 @@ RSpec.describe "Jekyll::ShieldsIO::ShieldFactory" do
       end
 
       it "can pull cache for existing shields" do
-        result = @factory.get_shield @config
+        result = nil
+        expect {
+          result = @factory.get_shield @config
+        }.not_to raise_error
         match_with_sample_properties result
       end
 
@@ -78,7 +81,8 @@ RSpec.describe "Jekyll::ShieldsIO::ShieldFactory" do
 
     private
 
-    # @param [Jekyll::ShieldsIO::Shield] result
+    # @param [Jekyll::ShieldsIO::Shield, nil] result
+    # noinspection RubyNilAnalysis
     def match_with_sample_properties(result)
       expect(result).not_to be_nil
       expect(result.width).to eq 174
@@ -118,7 +122,37 @@ RSpec.describe "Integration test" do
     end
   end
 
+  context "When invalid JSON is passed" do
+    it "fails with exception" do
+      t = Liquid::Template.new
+      expect {
+        t.parse(
+          <<~EOT
+            {% shield_io {this is invalid!} %}
+        EOT
+        )
+      }.to raise_error Jekyll::ShieldsIO::ShieldConfigMalformedError
+    end
+  end
+
+  context "When plugin fails to fetch new shield" do
+    it "outputs last-ditch effort alternative text" do
+      allow(HTTParty).to receive(:get).and_return(
+        instance_double(HTTParty::Response, body: "500 Service Unavailable", code: 500)
+      )
+      t = Liquid::Template.new
+      t.parse(
+        <<~EOT
+          {% shields_io {"message": "test"} %}
+      EOT
+      )
+      expect(t.render(@context)).to include("<p> test</p>")
+    end
+  end
+
   after do
-    FileUtils.rm_r @cache_dir
+    if File.exist? @cache_dir
+      FileUtils.rm_r @cache_dir
+    end
   end
 end
