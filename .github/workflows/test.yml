@@ -3,9 +3,16 @@ name: Check functionality
 on:
     push:
         branches: [ base ]
+        paths-ignore:
+            - "**.md"
+            - "LICENSE.txt"
+            - ".idea/**"
     pull_request:
         branches: [ base ]
-
+        paths-ignore:
+            - "**.md"
+            - "LICENSE.txt"
+            - ".idea/**"
 
 jobs:
     test:
