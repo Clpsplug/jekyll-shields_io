@@ -18,6 +18,10 @@ on:
             - ".gitignore"
             - ".editorconfig"
 
+concurrency:
+    group: ${{ github.head_ref }}-code-style
+    cancel-in-progress: true
+
 jobs:
     code_style:
         runs-on: ubuntu-latest
