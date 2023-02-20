@@ -1,12 +1,17 @@
 require "jekyll"
 require "jekyll-shields_io"
 require "httparty"
+require "nokogiri"
 require "spec_helper"
 
 RSpec.describe "Liquid::Template" do
   it "has 'shields_io' tag" do
     expect(Liquid::Template.tags["shields_io"]).to be Jekyll::ShieldsIO::ShieldsIOTag
   end
+end
+
+class ShieldsIOTagForTest < Jekyll::ShieldsIO::ShieldsIOTag
+  attr_reader :factory
 end
 
 RSpec.describe "Jekyll::ShieldsIO::ShieldFactory" do
@@ -96,6 +101,80 @@ RSpec.describe "Jekyll::ShieldsIO::ShieldFactory" do
   end
 end
 
+RSpec.describe "Jekyll::ShieldsIO::ShieldsIOTag" do
+  before do
+    @context = Liquid::Context.new({}, {}, {
+      site: Jekyll::Site.new(Jekyll.configuration({"source" => "", "skip_config_files" => true}))
+    })
+    File.open("spec/support/test_shield.svg", "r") { |fp|
+      @test_shield = fp.read
+    }
+    if @test_shield.nil?
+      fail "Test code has failed to read the support file for sample shield file"
+    end
+  end
+  describe "#render" do
+    before do
+      @tokenizer = Liquid::Tokenizer.new("")
+      @parse_context = Liquid::ParseContext.new
+    end
+    context "Normal situations" do
+      before do
+        allow(HTTParty).to receive(:get).and_return(
+          instance_double(HTTParty::Response, body: @test_shield, code: 200)
+        )
+      end
+      context "When alt is supplied" do
+        before do
+          markup = '{"message": "test", "alt": "Alternative Text"}'
+          @tag = ShieldsIOTagForTest.parse(nil, markup, @tokenizer, @parse_context)
+        end
+        it "creates an image tag with alt attribute" do
+          rendered = @tag.render @context
+          dom = Nokogiri::HTML.parse(rendered, nil, "utf-8")
+          expect(dom.xpath("//img/@alt").inner_text).to eq "Alternative Text"
+        end
+      end
+      context "When href is supplied" do
+        before do
+          markup = '{"message": "test", "href": "https://example.com/"}'
+          @tag = ShieldsIOTagForTest.parse(nil, markup, @tokenizer, @parse_context)
+        end
+        it "encloses the image tag within an <a> tag, making it a link" do
+          rendered = @tag.render @context
+          dom = Nokogiri::HTML.parse(rendered, nil, "utf-8")
+          expect(dom.xpath("//a/@href").inner_text).to eq "https://example.com/"
+        end
+      end
+    end
+
+    context "Abnormal situations" do
+      context "When plugin fails to fetch new shield" do
+        before do
+          allow(HTTParty).to receive(:get).and_return(
+            instance_double(HTTParty::Response, body: "500 Service Unavailable", code: 500)
+          )
+        end
+        it "outputs last-ditch effort alternative text" do
+          markup = '{"message": "test"}'
+          tokenizer = Liquid::Tokenizer.new("")
+          parse_context = Liquid::ParseContext.new
+          @tag = ShieldsIOTagForTest.parse(nil, markup, tokenizer, parse_context)
+          rendered = @tag.render @context
+          expect(rendered).to eq "<p> test</p>"
+        end
+      end
+    end
+
+    after do
+      dir = @tag.factory.send :cache_dir
+      if File.exist? dir
+        FileUtils.rm_r @tag.factory.send :cache_dir
+      end
+    end
+  end
+end
+
 Liquid::Template.register_tag("shield_io", Jekyll::ShieldsIO::ShieldsIOTag)
 
 RSpec.describe "Integration test" do
@@ -132,21 +211,6 @@ RSpec.describe "Integration test" do
         EOT
         )
       }.to raise_error Jekyll::ShieldsIO::ShieldConfigMalformedError
-    end
-  end
-
-  context "When plugin fails to fetch new shield" do
-    it "outputs last-ditch effort alternative text" do
-      allow(HTTParty).to receive(:get).and_return(
-        instance_double(HTTParty::Response, body: "500 Service Unavailable", code: 500)
-      )
-      t = Liquid::Template.new
-      t.parse(
-        <<~EOT
-          {% shields_io {"message": "test"} %}
-      EOT
-      )
-      expect(t.render(@context)).to include("<p> test</p>")
     end
   end
 
