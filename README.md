@@ -2,6 +2,10 @@
 
 > **Adding shields (badges) to your Jekyll blog, made more readable**
 
+![Ruby 2.7 and 3.1 supported](https://img.shields.io/badge/Ruby-2.7%20%7C%203.1-%23CC342D?logo=ruby)
+![Jekyll 3.5 through 4.3 supported](https://img.shields.io/badge/Jekyll-3.5%20~%204.x-%23CC0000?logo=jekyll)
+![Test status](https://github.com/clpsplug/jekyll-shields_io/actions/workflows/test.yml/badge.svg)
+
 This is a Jekyll plugin to generate a [Shields.io](https://shields.io) badge in your Jekyll blog
 with a more readable way.
 
