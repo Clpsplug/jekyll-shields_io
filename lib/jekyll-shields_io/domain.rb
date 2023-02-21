@@ -67,11 +67,5 @@ module Jekyll
     # Thrown when the plugin fails to fetch the shield image.
     class ShieldFetchError < StandardError
     end
-
-    # Thrown when the plugin fails to access the cached shield file.
-    # Realistically, if this happens something must be very wrong with the disk the cache is written to
-    # because the plugin would've crashed with IO errors well before this is thrown.
-    class ShieldFileError < StandardError
-    end
   end
 end
