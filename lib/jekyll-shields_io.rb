@@ -62,9 +62,6 @@ module Jekyll
       # @param [Shield] shield Shield to queue for this Jekyll site's Jekyll::StaticFile.
       # @raise [ShieldFileError] when specified cache file does not exist
       def queue_shield(shield)
-        unless File.exist? shield.path
-          raise ShieldFileError.new
-        end
         if @site.static_files.select { |f|
           f.is_a? StaticShieldFile
         }.select { |s| s.name == shield.basename }.any?
@@ -157,9 +154,6 @@ HTML
         end
       rescue ShieldFetchError
         warn "[Shields.IO Plugin] Failed to fetch shields! (input: #{JSON.dump @payload})"
-        @last_ditch_alt
-      rescue ShieldFileError
-        warn "[Shields.IO Plugin] Failed to access cached shields!"
         @last_ditch_alt
       end
     end

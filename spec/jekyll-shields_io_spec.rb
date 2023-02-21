@@ -20,7 +20,22 @@ class ShieldsIOTagForTest < Jekyll::ShieldsIO::ShieldsIOTag
   attr_reader :factory
 end
 
-RSpec.describe "Jekyll::ShieldsIO::ShieldFactory" do
+RSpec.describe Jekyll::ShieldsIO::StaticShieldFile.name do
+  describe "destination" do
+    before do
+      site = Jekyll::Site.new(Jekyll.configuration({"source" => Jekyll::Configuration::DEFAULTS[:source], "skip_config_files" => true}))
+      @dest = File.join("_cache", "shields_io")
+      @basename = "basename.svg"
+      @shield_file = Jekyll::ShieldsIO::StaticShieldFile.new site, site.source, File.join("_cache", "shields_io"), @basename, @dest
+    end
+    it "can output expected destination" do
+      dest = @shield_file.destination "dest_folder"
+      expect(dest).to eq File.join("dest_folder", @dest, @basename)
+    end
+  end
+end
+
+RSpec.describe Jekyll::ShieldsIO::ShieldFactory.name do
   before do
     # Mocked configuration values
     @context = Liquid::Context.new({}, {}, {
@@ -149,7 +164,7 @@ RSpec.describe "Jekyll::ShieldsIO::ShieldFactory" do
   end
 end
 
-RSpec.describe "Jekyll::ShieldsIO::ShieldsIOTag" do
+RSpec.describe Jekyll::ShieldsIO::ShieldsIOTag.name do
   before do
     @context = Liquid::Context.new({}, {}, {
       site: Jekyll::Site.new(Jekyll.configuration({"source" => "", "skip_config_files" => true}))
