@@ -3,20 +3,16 @@ name: Check code style
 on:
     push:
         branches: [ base ]
-        paths-ignore:
-            - "**.md"
-            - "LICENSE.txt"
-            - ".idea/**"
-            - ".gitignore"
-            - ".editorconfig"
+        paths:
+            - 'lib/**'
+            - 'spec/**'
+            - '.github/workflows/**'
     pull_request:
         branches: [ base ]
-        paths-ignore:
-            - "**.md"
-            - "LICENSE.txt"
-            - ".idea/**"
-            - ".gitignore"
-            - ".editorconfig"
+        paths:
+            - 'lib/**'
+            - 'spec/**'
+            - '.github/workflows/**'
 
 concurrency:
     group: ${{ github.head_ref }}-code-style
