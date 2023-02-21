@@ -10,7 +10,7 @@ concurrency:
     group: ${{ github.head_ref }}-code-style
 
 jobs:
-    code_style:
+    test:
         runs-on: ubuntu-latest
         strategy:
             matrix:
