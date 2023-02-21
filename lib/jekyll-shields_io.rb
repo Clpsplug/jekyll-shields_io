@@ -134,12 +134,12 @@ module Jekyll
       end
 
       def render(context)
-        fct = ShieldFactory.new context
-        shield = fct.get_shield @payload
-        fct.queue_shield shield
+        @factory = ShieldFactory.new context
+        shield = @factory.get_shield @payload
+        @factory.queue_shield shield
 
         shield_tag = <<HTML
-      <img src="/#{fct.target_dir}/#{shield.basename}" width="#{shield.width}" height="#{shield.height}"
+      <img src="/#{@factory.target_dir}/#{shield.basename}" width="#{shield.width}" height="#{shield.height}"
 HTML
         shield_tag += if !shield.alt.nil?
           " alt=\"#{shield.alt}\" class=\"#{shield.cls}\"/>"

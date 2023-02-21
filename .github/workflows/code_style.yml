@@ -3,20 +3,16 @@ name: Check code style
 on:
     push:
         branches: [ base ]
-        paths-ignore:
-            - "**.md"
-            - "LICENSE.txt"
-            - ".idea/**"
-            - ".gitignore"
-            - ".editorconfig"
+        paths:
+            - 'lib/**'
+            - 'spec/**'
+            - '.github/workflows/**'
     pull_request:
         branches: [ base ]
-        paths-ignore:
-            - "**.md"
-            - "LICENSE.txt"
-            - ".idea/**"
-            - ".gitignore"
-            - ".editorconfig"
+        paths:
+            - 'lib/**'
+            - 'spec/**'
+            - '.github/workflows/**'
 
 concurrency:
     group: ${{ github.head_ref }}-code-style
@@ -31,7 +27,7 @@ jobs:
         steps:
             -   uses: actions/checkout@v3
             -   name: Set up Ruby ${{ matrix.ruby-version }}
-                uses: ruby/setup-ruby@359bebbc29cbe6c87da6bc9ea3bc930432750108
+                uses: ruby/setup-ruby@d3c9825d67b0d8720afdfdde5af56c79fdb38d16
                 with:
                     ruby-version: ${{ matrix.ruby-version }}
                     bundler-cache: true

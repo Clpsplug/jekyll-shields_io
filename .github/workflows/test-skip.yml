@@ -1,0 +1,39 @@
+name: Check functionality
+on:
+    pull_request:
+        paths-ignore:
+            - 'lib/**'
+            - 'spec/**'
+            - '.github/workflows/**'
+
+concurrency:
+    group: ${{ github.head_ref }}-code-style
+
+jobs:
+    code_style:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                ruby_version: [ "3.1", "2.7" ]
+                appraisal:
+                    - jekyll-35
+                    - jekyll-36
+                    - jekyll-37
+                    - jekyll-38
+                    - jekyll-39
+                    - jekyll-40
+                    - jekyll-41
+                    - jekyll-42
+                    - jekyll-43
+                exclude:
+                    # exclude incompatible dependency combos
+                    -   ruby_version: "3.1"
+                        appraisal: jekyll-35
+                    -   ruby_version: "3.1"
+                        appraisal: jekyll-36
+                    -   ruby_version: "3.1"
+                        appraisal: jekyll-37
+                    -   ruby_version: "3.1"
+                        appraisal: jekyll-38
+        steps:
+            - run: 'echo "No functionality check required"'
