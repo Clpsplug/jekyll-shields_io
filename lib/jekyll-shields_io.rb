@@ -135,9 +135,9 @@ module Jekyll
         shield = @factory.get_shield @payload
         @factory.queue_shield shield
 
-        shield_tag = <<HTML
-      <img src="/#{@factory.target_dir}/#{shield.basename}" width="#{shield.width}" height="#{shield.height}"
-HTML
+        shield_tag = <<~HTML
+          <img src="/#{@factory.target_dir}/#{shield.basename}" width="#{shield.width}" height="#{shield.height}"
+        HTML
         shield_tag += if !shield.alt.nil?
           " alt=\"#{shield.alt}\" class=\"#{shield.cls}\"/>"
         else
