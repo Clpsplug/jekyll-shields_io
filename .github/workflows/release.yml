@@ -38,7 +38,7 @@ jobs:
             -   name: Publish to gem registry
                 run: bundle exec rake release
                 env:
-                    GEM_HOST_API_KEY: ${{ secrets.api-key }}
+                    GEM_HOST_API_KEY: ${{ secrets.API_KEY }}
                     GEM_HOST_OTP_CODE: ${{ inputs.otp }}
 
             -   name: Push tag
