@@ -51,13 +51,25 @@ jobs:
                 uses: ruby/setup-ruby@d3c9825d67b0d8720afdfdde5af56c79fdb38d16
                 with:
                     ruby-version: ${{ matrix.ruby_version }}
-            -   if: matrix.ruby_version == '2.7'
-                name: Update RubyGems version
+            -   name: Update RubyGems version
+                # Setting bundle install path causes default rubygems (3.1.6 / 3.3.3) to blows up
+                # Jekyll 4.3 causes default rubygems to blow up because of jekyll-sass-converter
+                # However, the latest rubygems blows up because of appraisal
                 # This is the version that NEITHER appraisal or jekyll-sass-converter
                 # blows up from incompatible dependencies
-                run: gem update --system 3.3.22
+                run: gem update --system 3.3.22 && gem update --system
+            -   uses: actions/cache@v3
+                # This will save all appraisal patterns
+                with:
+                    path: vendor/bundle
+                    key: bundle-use-ruby-${{ matrix.os }}-${{ matrix.ruby_version }}-${{ hashFiles('**/Gemfile.lock') }}
+                    restore-keys: |
+                        bundle-use-ruby-${{ matrix.os }}-${{ matrix.ruby_version }}-
             -   name: Install base dependencies
-                run: bundle install
+                # Putting the gems in vendor path allows appraisal to install dependencies there as well
+                run: |
+                    bundle config path vendor/bundle
+                    bundle install
             -   name: Install dependencies for appraisal
                 # This creates appraisal-specific Gemfiles
                 run: bundle exec appraisal install
