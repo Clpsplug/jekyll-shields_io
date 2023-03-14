@@ -1,65 +1,65 @@
 name: Check functionality
 
 on:
-    push:
-        branches: [ base ]
-        paths:
-            - 'lib/**'
-            - 'spec/**'
-            - '.github/workflows/**'
-    pull_request:
-        branches: [ base ]
-        paths:
-            - 'lib/**'
-            - 'spec/**'
-            - '.github/workflows/**'
+  push:
+    branches: [ base ]
+    paths:
+      - 'lib/**'
+      - 'spec/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ base ]
+    paths:
+      - 'lib/**'
+      - 'spec/**'
+      - '.github/workflows/**'
 
 concurrency:
-    group: ${{ github.head_ref }}-test
-    cancel-in-progress: true
+  group: ${{ github.head_ref }}-test
+  cancel-in-progress: true
 
 jobs:
-    test:
-        runs-on: ubuntu-latest
-        strategy:
-            fail-fast: false
-            matrix:
-                ruby_version: [ "3.1", "2.7" ]
-                appraisal:
-                    - jekyll-35
-                    - jekyll-36
-                    - jekyll-37
-                    - jekyll-38
-                    - jekyll-39
-                    - jekyll-40
-                    - jekyll-41
-                    - jekyll-42
-                    - jekyll-43
-                exclude:
-                    # exclude incompatible dependency combos
-                    -   ruby_version: "3.1"
-                        appraisal: jekyll-35
-                    -   ruby_version: "3.1"
-                        appraisal: jekyll-36
-                    -   ruby_version: "3.1"
-                        appraisal: jekyll-37
-                    -   ruby_version: "3.1"
-                        appraisal: jekyll-38
-        steps:
-            -   uses: actions/checkout@v3
-            -   name: Set up Ruby ${{ matrix.ruby_version }}
-                uses: ruby/setup-ruby@d3c9825d67b0d8720afdfdde5af56c79fdb38d16
-                with:
-                    ruby-version: ${{ matrix.ruby_version }}
-            -   if: matrix.ruby_version == '2.7'
-                name: Update RubyGems version
-                # This is the version that NEITHER appraisal or jekyll-sass-converter
-                # blows up from incompatible dependencies
-                run: gem update --system 3.3.22
-            -   name: Install base dependencies
-                run: bundle install
-            -   name: Install dependencies for appraisal
-                # This creates appraisal-specific Gemfiles
-                run: bundle exec appraisal install
-            -   name: Run tests
-                run: bundle exec appraisal ${{ matrix.appraisal }} rake spec
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby_version: [ "3.1", "2.7" ]
+        appraisal:
+          - jekyll-35
+          - jekyll-36
+          - jekyll-37
+          - jekyll-38
+          - jekyll-39
+          - jekyll-40
+          - jekyll-41
+          - jekyll-42
+          - jekyll-43
+        exclude:
+          # exclude incompatible dependency combos
+          - ruby_version: "3.1"
+            appraisal: jekyll-35
+          - ruby_version: "3.1"
+            appraisal: jekyll-36
+          - ruby_version: "3.1"
+            appraisal: jekyll-37
+          - ruby_version: "3.1"
+            appraisal: jekyll-38
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Ruby ${{ matrix.ruby_version }}
+        uses: ruby/setup-ruby@d3c9825d67b0d8720afdfdde5af56c79fdb38d16
+        with:
+          ruby-version: ${{ matrix.ruby_version }}
+      - if: matrix.ruby_version == '2.7'
+        name: Update RubyGems version
+        # This is the version that NEITHER appraisal or jekyll-sass-converter
+        # blows up from incompatible dependencies
+        run: gem update --system 3.3.22
+      - name: Install base dependencies
+        run: bundle install
+      - name: Install dependencies for appraisal
+        # This creates appraisal-specific Gemfiles
+        run: bundle exec appraisal install
+      - name: Run tests
+        run: bundle exec appraisal ${{ matrix.appraisal }} rake spec

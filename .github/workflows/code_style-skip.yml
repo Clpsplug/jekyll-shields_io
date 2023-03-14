@@ -1,21 +1,21 @@
 name: Check code style
 
 on:
-    pull_request:
-        branches: [ base ]
-        paths-ignore:
-            - 'lib/**'
-            - 'spec/**'
-            - '.github/workflows/**'
+  pull_request:
+    branches: [ base ]
+    paths-ignore:
+      - 'lib/**'
+      - 'spec/**'
+      - '.github/workflows/**'
 
 concurrency:
-    group: ${{ github.head_ref }}-code-style
+  group: ${{ github.head_ref }}-code-style
 
 jobs:
-    code_style:
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                ruby-version: [ '3.1', '2.7' ]
-        steps:
-            - run: 'echo "No syntax check required"'
+  code_style:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby-version: [ '3.1', '2.7' ]
+    steps:
+      - run: 'echo "No syntax check required"'

@@ -1,37 +1,37 @@
 name: Check code style
 
 on:
-    push:
-        branches: [ base ]
-        paths:
-            - 'lib/**'
-            - 'spec/**'
-            - '.github/workflows/**'
-    pull_request:
-        branches: [ base ]
-        paths:
-            - 'lib/**'
-            - 'spec/**'
-            - '.github/workflows/**'
+  push:
+    branches: [ base ]
+    paths:
+      - 'lib/**'
+      - 'spec/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ base ]
+    paths:
+      - 'lib/**'
+      - 'spec/**'
+      - '.github/workflows/**'
 
 concurrency:
-    group: ${{ github.head_ref }}-code-style
-    cancel-in-progress: true
+  group: ${{ github.head_ref }}-code-style
+  cancel-in-progress: true
 
 jobs:
-    code_style:
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                ruby-version: [ '3.1', '2.7' ]
-        steps:
-            -   uses: actions/checkout@v3
-            -   name: Set up Ruby ${{ matrix.ruby-version }}
-                uses: ruby/setup-ruby@d3c9825d67b0d8720afdfdde5af56c79fdb38d16
-                with:
-                    ruby-version: ${{ matrix.ruby-version }}
-                    bundler-cache: true
-            -   name: Install dependencies
-                run: bundle install
-            -   name: Run tests
-                run: bundle exec rake standard
+  code_style:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby-version: [ '3.1', '2.7' ]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Ruby ${{ matrix.ruby-version }}
+        uses: ruby/setup-ruby@d3c9825d67b0d8720afdfdde5af56c79fdb38d16
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+      - name: Install dependencies
+        run: bundle install
+      - name: Run tests
+        run: bundle exec rake standard

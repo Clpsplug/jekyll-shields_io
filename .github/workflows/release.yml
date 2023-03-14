@@ -5,51 +5,51 @@
 name: Release
 
 on:
-    workflow_dispatch:
-        inputs:
-            otp:
-                description: "One-time password for RubyGems.org"
-                required: true
+  workflow_dispatch:
+    inputs:
+      otp:
+        description: "One-time password for RubyGems.org"
+        required: true
 
 concurrency:
-    group: ${{ github.workflow }}
-    cancel-in-progress: true
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
 
 jobs:
-    release:
-        runs-on: ubuntu-latest
-        permissions:
-            contents: write
-        steps:
-            -   name: Checkout
-                uses: actions/checkout@v3
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-            -   name: Set up Ruby
-                uses: ruby/setup-ruby@v1
-                with:
-                    ruby-version: "3.1"
-                    bundler-cache: true
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.1"
+          bundler-cache: true
 
-            -   name: Configure Git
-                run: |
-                    git config --global user.name "${GITHUB_ACTOR}"
-                    git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+      - name: Configure Git
+        run: |
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
 
-            -   name: Publish to gem registry
-                run: bundle exec rake release
-                env:
-                    GEM_HOST_API_KEY: ${{ secrets.API_KEY }}
-                    GEM_HOST_OTP_CODE: ${{ inputs.otp }}
+      - name: Publish to gem registry
+        run: bundle exec rake release
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.API_KEY }}
+          GEM_HOST_OTP_CODE: ${{ inputs.otp }}
 
-            -   name: Push tag
-                run: git push --follow-tags
+      - name: Push tag
+        run: git push --follow-tags
 
-            -   name: Get tag
-                run: echo "::set-output name=name::$(git describe --abbrev=0)"
-                id: tag
+      - name: Get tag
+        run: echo "::set-output name=name::$(git describe --abbrev=0)"
+        id: tag
 
-            -   name: Create GitHub release
-                run: gh release create "${TAG_NAME}" --draft
-                env:
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                    TAG_NAME: ${{ steps.tag.outputs.name }}
+      - name: Create GitHub release
+        run: gh release create "${TAG_NAME}" --draft
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ steps.tag.outputs.name }}
